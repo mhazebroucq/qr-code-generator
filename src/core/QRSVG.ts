@@ -97,7 +97,6 @@ export default class QRSVG {
         dotSize
       });
     }
-
     this.clear();
     this.drawBackground();
     this.drawDots((i: number, j: number): boolean => {
