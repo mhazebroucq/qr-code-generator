@@ -41,7 +41,11 @@ export default class QRSVG {
   constructor(options: RequiredOptions) {
     this._element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     this._element.setAttribute("width", String(options.width));
-    this._element.setAttribute("height", String(options.height));
+    if (options.title && options.title.length > 0) {
+      this._element.setAttribute("height", String(options.height + options.height * 0.1));
+    } else {
+      this._element.setAttribute("height", String(options.height));
+    }
     this._defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
     this._element.appendChild(this._defs);
 
@@ -135,6 +139,10 @@ export default class QRSVG {
     if (element) {
       const gradientOptions = options.backgroundOptions?.gradient;
       const color = options.backgroundOptions?.color;
+      let height = options.height;
+      if (options.title && options.title.length > 0) {
+        height += this._options.height * 0.1;
+      }
 
       if (gradientOptions || color) {
         this._createColor({
@@ -143,11 +151,22 @@ export default class QRSVG {
           additionalRotation: 0,
           x: 0,
           y: 0,
-          height: options.height,
+          height: height,
           width: options.width,
-          name: "background-color"
+          name: "background-color",
+          text: options.title
         });
       }
+
+      // if (this._options.title && this._options.title.length > 0) {
+      //   const text = document.createElement("text");
+      //   text.setAttribute("font-size", `${this._options.height * 0.1}px`);
+      //   text.setAttribute("text-align", "center");
+      //   text.setAttribute("x", "50%");
+      //   text.setAttribute("y", `${this._options.height * 0.1}`);
+      //   text.innerText = this._options.title;
+      //   this._element.prepend(text);
+      // }
     }
   }
 
@@ -166,7 +185,10 @@ export default class QRSVG {
     const minSize = Math.min(options.width, options.height) - options.margin * 2;
     const dotSize = Math.floor(minSize / count);
     const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    let yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    if (this._options.title && this._options.title.length > 0) {
+      yBeginning += this._options.height * 0.1;
+    }
     const dot = new QRDot({ svg: this._element, type: options.dotsOptions.type });
 
     this._dotsClipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
@@ -229,8 +251,10 @@ export default class QRSVG {
     const cornersSquareSize = dotSize * 7;
     const cornersDotSize = dotSize * 3;
     const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
-
+    let yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    if (this._options.title && this._options.title.length > 0) {
+      yBeginning += this._options.height * 0.1;
+    }
     [
       [0, 0, 0],
       [1, 0, Math.PI / 2],
@@ -375,7 +399,10 @@ export default class QRSVG {
   }): void {
     const options = this._options;
     const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    let yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    if (this._options.title && this._options.title.length > 0) {
+      yBeginning += this._options.height * 0.1;
+    }
     const dx = xBeginning + options.imageOptions.margin + (count * dotSize - width) / 2;
     const dy = yBeginning + options.imageOptions.margin + (count * dotSize - height) / 2;
     const dw = width - options.imageOptions.margin * 2;
@@ -399,7 +426,8 @@ export default class QRSVG {
     y,
     height,
     width,
-    name
+    name,
+    text
   }: {
     options?: Gradient;
     color?: string;
@@ -409,6 +437,7 @@ export default class QRSVG {
     height: number;
     width: number;
     name: string;
+    text?: string;
   }): void {
     const size = width > height ? width : height;
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -483,7 +512,17 @@ export default class QRSVG {
     } else if (color) {
       rect.setAttribute("fill", color);
     }
-
     this._element.appendChild(rect);
+
+    if (text && text.length > 0) {
+      const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      textEl.setAttribute("x", "50%");
+      textEl.setAttribute("y", "10px");
+      textEl.setAttribute("dominant-baseline", "middle");
+      textEl.setAttribute("text-anchor", "middle");
+      textEl.setAttribute("style", `font-family: Segoe UI;font-size:${this._options.height * 0.1}px`);
+      textEl.textContent = text;
+      this._element.append(textEl);
+    }
   }
 }

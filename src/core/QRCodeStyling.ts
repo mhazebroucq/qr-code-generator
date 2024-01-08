@@ -100,9 +100,9 @@ export default class QRCodeStyling {
       throw "Container should be a single DOM node";
     }
 
-    if (this._options.htmlTitle || this._options.title) {
-      container.appendChild(this.getText());
-    }
+    // if (this._options.htmlTitle || this._options.title) {
+    //   container.appendChild(this.getText());
+    // }
 
     if (this._options.type === drawTypes.canvas) {
       if (this._canvas) {
@@ -117,23 +117,22 @@ export default class QRCodeStyling {
     this._container = container;
   }
 
-  getText(): HTMLElement {
-    console.log("addText");
-    const options = this._options;
+  // getText(): HTMLElement {
+  //   const options = this._options;
 
-    let titleElement: HTMLElement = document.createElement("div");
-    if (options.htmlTitle) {
-      console.log(options.htmlTitle);
-      titleElement = document.createElement("div");
-      titleElement.innerHTML = options.htmlTitle.toString();
-    }
-    if (options.title) {
-      console.log(options.title);
-      titleElement = document.createElement("h1");
-      titleElement.innerText = options.title.toString();
-    }
-    return titleElement;
-  }
+  //   let titleElement: HTMLElement = document.createElement("div");
+  //   if (options.htmlTitle) {
+  //     console.log(options.htmlTitle);
+  //     titleElement = document.createElement("div");
+  //     titleElement.innerHTML = options.htmlTitle.toString();
+  //   }
+  //   if (options.title) {
+  //     console.log(options.title);
+  //     titleElement = document.createElement("h1");
+  //     titleElement.innerText = options.title.toString();
+  //   }
+  //   return titleElement;
+  // }
 
   async getRawData(extension: Extension = "png"): Promise<Blob | null> {
     if (!this._qr) throw "QR code is empty";

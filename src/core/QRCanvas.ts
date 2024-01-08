@@ -32,12 +32,17 @@ export default class QRCanvas {
   _options: RequiredOptions;
   _qr?: QRCode;
   _image?: HTMLImageElement;
+  _title?: string;
 
   //TODO don't pass all options to this class
   constructor(options: RequiredOptions) {
     this._canvas = document.createElement("canvas");
     this._canvas.width = options.width;
-    this._canvas.height = options.height;
+    if (options.title && options.title.length > 0) {
+      this._canvas.height = options.height + options.height * 0.1;
+    } else {
+      this._canvas.height = options.height;
+    }
     this._options = options;
   }
 
@@ -96,6 +101,7 @@ export default class QRCanvas {
 
     this.clear();
     this.drawBackground();
+
     this.drawDots((i: number, j: number): boolean => {
       if (this._options.imageOptions.hideBackgroundDots) {
         if (
@@ -122,6 +128,13 @@ export default class QRCanvas {
 
     if (this._options.image) {
       this.drawImage({ width: drawImageSize.width, height: drawImageSize.height, count, dotSize });
+    }
+    if (this._options.title) {
+      (this.context as CanvasRenderingContext2D).font = `${this._options.height * 0.1}px Segoe UI`;
+      (this.context as CanvasRenderingContext2D).textAlign = "center";
+      (this.context as CanvasRenderingContext2D).fillStyle = "black";
+      const x = this._options.width / 2;
+      (this.context as CanvasRenderingContext2D).fillText(this._options.title, x, this._options.height * 0.08);
     }
   }
 
@@ -174,7 +187,10 @@ export default class QRCanvas {
     const minSize = Math.min(options.width, options.height) - options.margin * 2;
     const dotSize = Math.floor(minSize / count);
     const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    let yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    if (this._options.title && this._options.title.length > 0) {
+      yBeginning += this._options.height * 0.1;
+    }
     const dot = new QRDot({ context: canvasContext, type: options.dotsOptions.type });
 
     canvasContext.beginPath();
@@ -242,8 +258,10 @@ export default class QRCanvas {
     const cornersSquareSize = dotSize * 7;
     const cornersDotSize = dotSize * 3;
     const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
-
+    let yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    if (this._options.title && this._options.title.length > 0) {
+      yBeginning += this._options.height * 0.1;
+    }
     [
       [0, 0, 0],
       [1, 0, Math.PI / 2],
@@ -398,7 +416,10 @@ export default class QRCanvas {
 
     const options = this._options;
     const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    let yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    if (this._options.title && this._options.title.length > 0) {
+      yBeginning += this._options.height * 0.1;
+    }
     const dx = xBeginning + options.imageOptions.margin + (count * dotSize - width) / 2;
     const dy = yBeginning + options.imageOptions.margin + (count * dotSize - height) / 2;
     const dw = width - options.imageOptions.margin * 2;
